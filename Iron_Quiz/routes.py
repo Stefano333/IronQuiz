@@ -13,9 +13,10 @@ def login():
             username = login_form.username.data
             print(username)
             if username == 'admin':
+                flash('admin')
                 return redirect(url_for('admin'))
             else:
-                return redirect(url_for('user'))
+                return redirect(url_for('quiz'))
     return render_template('login.html', form=login_form)
 
 
@@ -23,3 +24,8 @@ def login():
 def admin():
     question_form = QuestionsForm()
     return render_template('admin.html', question_form=question_form)
+
+@app.route('/quiz')
+def quiz():
+    flash('user')
+    return render_template('quiz.html')

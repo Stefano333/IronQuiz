@@ -1,0 +1,7 @@
+<h1>quiz</h1>
+
+{% with user_type = get_flashed_messages() %}
+  {% if user_type %}
+  <h1>grande</h1>
+  {% endif %}
+  {% endwith %}
