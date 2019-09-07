@@ -2,9 +2,9 @@
 <h1>Admin</h1>
 <form method="post">
     {{ question_form.hidden_tag() }}
-    <dl>
+    <ul>
         {{ question_form.question }}
         {{ question_form.right_answer }}
         {{ question_form.wrong_answer }}
-    </dl>
+    </ul>
 </form>
