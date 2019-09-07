@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<h1>Admin</h1>
+<form method="post">
+    {{ question_form.hidden_tag() }}
+    <dl>
+        {{ question_form.question }}
+        {{ question_form.right_answer }}
+        {{ question_form.wrong_answer }}
+    </dl>
+</form>

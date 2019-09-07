@@ -1,3 +1,5 @@
 /bin
 /lib
 __pycache__/
+.vscode/
+test.sql

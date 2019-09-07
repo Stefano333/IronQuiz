@@ -1,5 +1,4 @@
 import os
-from flask_migrate import Migrate
 basedir = os.path.abspath(os.path.dirname(__file__))
 sqlite_dir = 'sqlite:///' + os.path.join(basedir, 'app.db')
 
