@@ -3,7 +3,11 @@
 <form method="post">
     {{ form.hidden_tag() }}
   <ul>
-    {{ form.username }}
-    {{ form.submit }}
+    <li>{{ form.username }}</li>
+    {% for error in form.username.errors %}
+      <li><span style="color: red;">[{{ error }}]</span></li>
+    {% endfor %}
+    <li>{{ form.submit }}</li>
+    
   </ul>
 </form>
