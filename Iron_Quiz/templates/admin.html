@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <h1>Admin</h1>
+{% if question_form %}
 <form method="post">
     {{ question_form.hidden_tag() }}
     <ul>
         <li>{{ question_form.question }}</li>
         {% for error in question_form.question.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
+        <li><span style="color: red;">[{{ error }}]</span></li>
         {% endfor %}
         <li>{{ question_form.right_answer }}</li>
         {% for error in question_form.right_answer.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
+        <li><span style="color: red;">[{{ error }}]</span></li>
         {% endfor %}
         <li>{{ question_form.wrong_answer }}</li>
         {% for error in question_form.wrong_answer.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
+        <li><span style="color: red;">[{{ error }}]</span></li>
         {% endfor %}
-        
+        <li>{{ question_form.submit }}</li>
+
+
     </ul>
 </form>
+{% else %}
+<ul>
+    <li>Question: {{ current_question.question }}</li>
+    <li>Right answer: {{ current_question.right_answer }}</li>
+    <li>Wrong answer: {{ current_question.wrong_answer }}</li>
+</ul>
+{% endif %}
