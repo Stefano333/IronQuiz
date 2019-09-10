@@ -50,13 +50,13 @@ def admin():
             return redirect(url_for('admin'))
 
     if current_question:
-        return render_template('admin.html', current_question=current_question)
+        return render_template('admin.html', current_question=current_question['data'])
     return render_template('admin.html', question_form=question_form)
 
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    current_question_id = get_current_question()['id']
+    current_question_id = get_current_question()['data']['id']
     logged_user = session.get('username')
 
     if request.method == 'POST':
