@@ -12,6 +12,11 @@ config = {
 
 
 def get_user(user_to_search: str) -> bool:
+    output = {
+        'query_successful': False,
+        'data': 'data'
+    }
+
     get_username_query = '''
         SELECT username
         FROM users
@@ -86,13 +91,13 @@ def get_current_question() -> dict:
         db = mariadb.connect(**config)
         cursor = db.cursor(buffered=True)
         cursor.execute(query)
+        current_answer = cursor.fetchone()
 
         if cursor.rowcount:
-            for id, question, right_answer, wrong_answer in cursor:
-                question_data['id'] = id
-                question_data['question'] = question
-                question_data['right_answer'] = right_answer
-                question_data['wrong_answer'] = wrong_answer
+            question_data['id'] = current_answer[0]
+            question_data['question'] = current_answer[1]
+            question_data['right_answer'] = current_answer[2]
+            question_data['wrong_answer'] = current_answer[3]
 
         return question_data
 
@@ -120,6 +125,7 @@ def book_answer(username: str, question_id: int) -> bool:
         db = mariadb.connect(**config)
         cursor = db.cursor(buffered=True)
         cursor.execute(get_placement_query)
+        # cursor.fetchone()
 
         if cursor.rowcount:
             for max_placement in cursor:
@@ -170,24 +176,14 @@ if __name__ == "__main__":
 
         cursor = db.cursor(buffered=True)
         query = ('''
-        SELECT * FROM users WHERE username='imperialsoldier3'
+        SELECT * FROM users;
         ''')
 
         records = {}
 
-        cursor.execute("INSERT INTO users(username) VALUES('ciao')")
-        db.commit()
-        print(cursor.rowcount)
-
-        for id, username in cursor:
-            records[id] = username
-            print("{0}: {1}".format(id, username))
-
-        if(records):
-            for id in records.keys():
-                print("{0}: {1}".format(id, records[id]))
-        else:
-            print("no records")
+        cursor.execute(query)
+        result = cursor.fetchall()
+        print("result: {0}, type: {1}".format(result, type(result)))
 
     except mariadb.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
