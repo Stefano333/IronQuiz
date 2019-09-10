@@ -125,15 +125,13 @@ def book_answer(username: str, question_id: int) -> bool:
         db = mariadb.connect(**config)
         cursor = db.cursor(buffered=True)
         cursor.execute(get_placement_query)
-        # cursor.fetchone()
+        max_placement = cursor.fetchone()[0]
 
         if cursor.rowcount:
-            for max_placement in cursor:
-                print(max_placement[0])
-                if max_placement[0] == None:
-                    placement = 1
-                else:
-                    placement += max_placement[0]
+            if max_placement == None:
+                placement = 1
+            else:
+                placement += max_placement
 
         book_answer_query = '''
             INSERT INTO answering_queue(placement, answering_queue_questions_id, answering_queue_users_username)
