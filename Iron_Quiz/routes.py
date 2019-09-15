@@ -3,7 +3,9 @@ from flask import render_template, request, flash, redirect, url_for, session
 from Iron_Quiz.forms import LoginForm, QuestionsForm, AnswersForm
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
-from Iron_Quiz.dbconfig import get_user, get_current_question, insert_new_question, book_answer
+from Iron_Quiz.dbconfig import *
+from werkzeug.datastructures import ImmutableMultiDict
+from Iron_Quiz.data_types import QuizStatus
 
 
 @app.route('/')
@@ -39,27 +41,120 @@ def login():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    current_question = get_current_question()
     question_form = QuestionsForm()
+    current_question = get_current_question()['data']
+    current_question_id = current_question['id']
+    logged_user = session.get('username')
+    status = QuizStatus.NO_QUESTION
+
+    data = {}
 
     if request.method == 'POST':
         if question_form.validate_on_submit():
             insert_new_question(question_form.question.data,
                                 question_form.right_answer.data, question_form.wrong_answer.data)
+            status = QuizStatus.USER_CAN_BOOK
 
             return redirect(url_for('admin'))
 
     if current_question:
-        return render_template('admin.html', current_question=current_question['data'])
+        status = QuizStatus.USER_CAN_BOOK
+        current_booking = current_booking_to_deal(current_question_id)[
+            'data']
+
+        if current_booking:
+            current_booking_placement = current_booking['placement']
+            current_booker = current_booking['booker']
+            current_booker_can_answer = current_booking['can_answer']
+            current_booker_did_answer = current_booking['did_answer']
+            checked_answer = current_booking['checked_answer']
+            current_booker_did_win = current_booking['did_win']
+
+            if current_booker and not current_booker_can_answer:
+                status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+                # show the first user in queue for answer and button to allow him
+
+            elif current_booker_can_answer and not current_booker_did_answer:
+                status = QuizStatus.USER_CAN_ANSWER
+                # show question and message "waiting for answer" by
+
+            elif current_booker_did_answer and not checked_answer:
+                status = QuizStatus.USER_WAITING_VALIDATION
+                # show question, right answer and user's answer
+
+            elif checked_answer and current_booker_did_win:
+                status = QuizStatus.USER_WON
+                # go to user_won page
+
+            elif checked_answer and not current_booker_did_win:
+                status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+
+        data['current_question'], data['current_booking'] = current_question, current_booking
+        data['status'] = status
+
+        return render_template('admin.html', data=data, quiz_status_list=QuizStatus)
+        # return render_template('admin.html', current_question=current_question)
     return render_template('admin.html', question_form=question_form)
+
+#
+@app.route('/allow_answer/<int:booking_id>', methods=['POST'])
+def allow_user_to_answer(booking_id: int):
+    user_can_answer(booking_id)
+
+    return redirect(url_for('admin'))
 
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    current_question_id = get_current_question()['data']['id']
+    answer_form = AnswersForm()
+    quiz = {}
+
     logged_user = session.get('username')
 
-    if request.method == 'POST':
-        book_answer(logged_user, current_question_id)
+    current_question_id = get_current_question()['data']['id']
 
-    return render_template('quiz.html')
+    user_booking_status = booking_status(
+        logged_user, current_question_id)['data']
+    booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
+    did_answer, checked_answer = user_booking_status['did_answer'], user_booking_status['checked_answer']
+    did_win = user_booking_status['did_win']
+
+    status = QuizStatus.USER_CAN_BOOK
+
+    if request.method == 'POST':
+        # form_data = request.form.to_dict(flat=False)
+
+        if not booked_answer:
+            book_answer(logged_user, current_question_id)
+
+            redirect(url_for('quiz'))
+
+        elif booked_answer and answer_form.validate_on_submit():  # not post
+            status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+
+            flash('Wait for your turn', 'hint')
+
+        elif can_answer and not did_answer:  # not post
+            status = QuizStatus.USER_CAN_ANSWER
+
+        elif did_answer and not checked_answer:
+            status = QuizStatus.USER_WAITING_VALIDATION
+
+            flash('Wait for answer validation', 'hint')
+
+        elif checked_answer and did_win:
+            status = QuizStatus.USER_WON
+
+            flash('You won!', 'hint')
+        else:
+            status = QuizStatus.USER_LOST
+
+            flash('Your answer was not right!', 'hint')
+
+    user_booking_status['status'] = status
+    quiz = {'user_booking_status': user_booking_status,
+            'answer_form': answer_form}
+
+    print(quiz['answer_form'])
+
+    return render_template('quiz.html', quiz=quiz, quiz_status_list=QuizStatus)

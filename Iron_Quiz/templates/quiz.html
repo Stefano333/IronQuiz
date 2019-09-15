@@ -1,5 +1,29 @@
 <h1>quiz</h1>
 
+{% with message = get_flashed_messages(category_filter=["hint"]) %}
+{% if quiz.user_booking_status.status == quiz_status_list.NOT_BOOKED %}
 <form method="POST">
-    <input id="submit" name="submit" type="submit">
+    <input id="submit" name="submit_booking" type="submit" value="Book answer">
 </form>
+{% elif quiz.user_booking_status.status == quiz_status_list.WAITING_TURN or
+    quiz.user_booking_status.status == quiz_status_list.WAITING_VALIDATION or
+    quiz.user_booking_status.status == quiz_status_list.WON or
+    quiz.user_booking_status.status == quiz_status_list.NOT_WON
+    %}
+{% if message%}
+<h3>{{ message }}</h3>
+{% endif %}
+{% elif quiz.user_booking_status.status == quiz_status_list.CAN_ANSWER %}
+<form method="POST">
+    {{ quiz.answer_form.hidden_tag() }}
+    {{ quiz.answer_form.answer }}
+    {% for error in quiz.answer_form.answer.errors %}
+    <li><span style="color: red;">[{{ error }}]</span></li>
+    {% endfor %}
+    {{ quiz.answer_form.submit_answer }}
+</form>
+{% else %}
+{% endif %}
+{% endwith %}
+
+{{ quiz.user_booking_status }}

@@ -22,4 +22,4 @@ class QuestionsForm(FlaskForm):
 class AnswersForm(FlaskForm):
     answer = StringField('Answer', [validators.Length(min=1)], render_kw={
                          "placeholder": "Your answer..."})
-    submit = SubmitField('Submit answer')
+    submit_answer = SubmitField('Submit answer')

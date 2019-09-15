@@ -21,10 +21,20 @@
 
     </ul>
 </form>
+{% elif data.status == quiz_status_list.USER_WAITING_ALLOWANCE_TO_ANSWER %}
+<ul>
+    <li>Question: {{ data.current_question.question }}</li>
+    <li>Booker: {{ data.current_booking.booker }}</li>
+    <li>
+        <form method="POST" action="/allow_answer/{{ data.current_booking.id }}">
+            <button type="submit" value={{ data.current_booking.booker }}></button>
+        </form>
+    </li>
+</ul>
 {% else %}
 <ul>
-    <li>Question: {{ current_question.question }}</li>
-    <li>Right answer: {{ current_question.right_answer }}</li>
-    <li>Wrong answer: {{ current_question.wrong_answer }}</li>
+    <li>Question: {{ data.current_question.question }}</li>
+    <li>Right answer: {{ data.current_question.right_answer }}</li>
+    <li>Wrong answer: {{ data.current_question.wrong_answer }}</li>
 </ul>
 {% endif %}
