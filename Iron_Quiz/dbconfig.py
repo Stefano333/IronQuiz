@@ -194,10 +194,11 @@ def booking_status(username: str, question_id: int) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes
     booked_answer, can_answer, did_answer, checked_answer, did_win = False, False, False, False, False
+    id = 0
     data = {}
 
     get_booking_status_query = '''
-    SELECT can_answer, did_answer, checked_answer, did_win
+    SELECT can_answer, did_answer, checked_answer, did_win, id
     FROM answering_queue
     WHERE answering_queue_questions_id = {0}
         AND answering_queue_users_username = '{1}'
@@ -215,6 +216,7 @@ def booking_status(username: str, question_id: int) -> dict:
             did_answer = True if result[1] else False
             checked_answer = True if result[2] else False
             did_win = True if result[3] else False
+            id = result[4]
 
         successful_query = True
 
@@ -231,7 +233,7 @@ def booking_status(username: str, question_id: int) -> dict:
         db.close()
 
         data['booked_answer'], data['can_answer'], data['checked_answer'] = booked_answer, can_answer, checked_answer
-        data['did_answer'], data['did_win'] = did_answer, did_win
+        data['did_answer'], data['did_win'], data['id'] = did_answer, did_win, id
 
         return {'successful_query': successful_query, 'error': error, 'data': data}
 

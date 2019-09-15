@@ -117,25 +117,28 @@ def quiz():
         logged_user, current_question_id)['data']
     booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
     did_answer, checked_answer = user_booking_status['did_answer'], user_booking_status['checked_answer']
-    did_win = user_booking_status['did_win']
+    did_win, booking_id = user_booking_status['did_win'], user_booking_status['id']
 
     status = QuizStatus.USER_CAN_BOOK
 
     if request.method == 'POST':
         # form_data = request.form.to_dict(flat=False)
-
-        if not booked_answer:
+        if not user_booking_status:
             book_answer(logged_user, current_question_id)
 
             redirect(url_for('quiz'))
 
-        elif booked_answer and answer_form.validate_on_submit():  # not post
+    else:
+        if booked_answer and answer_form.validate_on_submit():  # not post
             status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
 
             flash('Wait for your turn', 'hint')
 
         elif can_answer and not did_answer:  # not post
+            quiz['current_question'] = get_current_question()['data']
+
             status = QuizStatus.USER_CAN_ANSWER
+            # show question and let user to input answer
 
         elif did_answer and not checked_answer:
             status = QuizStatus.USER_WAITING_VALIDATION
@@ -146,15 +149,13 @@ def quiz():
             status = QuizStatus.USER_WON
 
             flash('You won!', 'hint')
-        else:
+
+        elif checked_answer and not did_win:
             status = QuizStatus.USER_LOST
 
             flash('Your answer was not right!', 'hint')
 
-    user_booking_status['status'] = status
-    quiz = {'user_booking_status': user_booking_status,
-            'answer_form': answer_form}
-
-    print(quiz['answer_form'])
+    quiz['user_booking_status'], quiz['answer_form'] = user_booking_status, answer_form
+    quiz['status'] = status
 
     return render_template('quiz.html', quiz=quiz, quiz_status_list=QuizStatus)
