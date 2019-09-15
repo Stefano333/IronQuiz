@@ -159,3 +159,13 @@ def quiz():
     quiz['status'] = status
 
     return render_template('quiz.html', quiz=quiz, quiz_status_list=QuizStatus)
+
+
+@app.route('/submit_answer/<int:booking_id>', methods=['POST'])
+def allow_answered(booking_id: int):
+    if request.method == 'POST':
+        answer = request.form.to_dict(flat=True)['answer']
+
+        user_answered(booking_id, answer)
+
+        return redirect(url_for('quiz'))

@@ -334,6 +334,45 @@ def user_can_answer(booking_id: int) -> dict:
         return {'successful_query': successful_query, 'error': error}
 
 
+def user_answered(booking_id: int, answer: str) -> dict:
+    successful_query = False
+    error = ''  # will store eventual error codes
+
+    update_can_answer_query = '''
+        UPDATE answering_queue 
+        SET answer = '{0}',
+            did_answer = TRUE
+        WHERE id = {1}
+        '''.format(answer, booking_id)
+
+    try:
+        db = mariadb.connect(**config)
+        cursor = db.cursor(buffered=True)
+        cursor.execute(update_can_answer_query)
+
+        if cursor.rowcount:
+            db.commit()
+
+        successful_query = True
+
+    except mariadb.Error as err:
+        error = err.errno
+
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+        error = err
+
+    finally:
+        cursor.close()
+        db.close()
+
+        return {'successful_query': successful_query, 'error': error}
+
+
 if __name__ == "__main__":
     db_host = os.environ.get('DB_HOST')
     db_user = os.environ.get('DB_USER')

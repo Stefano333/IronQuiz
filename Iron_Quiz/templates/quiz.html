@@ -10,8 +10,8 @@
     quiz.status == quiz_status_list.USER_WON or
     quiz.status == quiz_status_list.USER_LOST
     %}
-{% if message%}
-<h3>{{ message }}</h3>
+{% if message %}
+<h3>{{ message.0 }}</h3>
 {% endif %}
 {% elif quiz.status == quiz_status_list.USER_CAN_ANSWER %}
 <h3>{{ quiz.current_question.question }}?</h3>
