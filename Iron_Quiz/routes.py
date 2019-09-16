@@ -123,18 +123,16 @@ def answer_validated(booking_id: int):
 def quiz():
     answer_form = AnswersForm()
     quiz = {}
+    user_booking_status = {}
 
     logged_user = session.get('username')
+    status = QuizStatus.NO_QUESTION
 
-    current_question_id = get_current_question()['data']['id']
-
-    user_booking_status = booking_status(
-        logged_user, current_question_id)['data']
-    booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
-    did_answer, checked_answer = user_booking_status['did_answer'], user_booking_status['checked_answer']
-    did_win, booking_id = user_booking_status['did_win'], user_booking_status['id']
-
-    status = QuizStatus.USER_CAN_BOOK
+    if get_current_question()['data']:
+        current_question_id = get_current_question()['data']['id']
+        user_booking_status = booking_status(
+            logged_user, current_question_id)['data']
+        status = QuizStatus.USER_CAN_BOOK
 
     if request.method == 'POST':
         # form_data = request.form.to_dict(flat=False)
@@ -143,8 +141,13 @@ def quiz():
 
             redirect(url_for('quiz'))
 
-    else:
-        if booked_answer and answer_form.validate_on_submit():  # not post
+    if user_booking_status:
+        booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
+        did_answer, checked_answer = user_booking_status[
+            'did_answer'], user_booking_status['checked_answer']
+        did_win, booking_id = user_booking_status['did_win'], user_booking_status['id']
+
+        if booked_answer and not can_answer:  # not post
             status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
 
             flash('Wait for your turn', 'hint')
@@ -170,7 +173,8 @@ def quiz():
 
             flash('Your answer was not right!', 'hint')
 
-    quiz['user_booking_status'], quiz['answer_form'] = user_booking_status, answer_form
+        quiz['user_booking_status'], quiz['answer_form'] = user_booking_status, answer_form
+
     quiz['status'] = status
 
     return render_template('quiz.html', quiz=quiz, quiz_status_list=QuizStatus)

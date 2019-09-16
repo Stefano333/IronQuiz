@@ -193,8 +193,8 @@ def book_answer(username: str, question_id: int) -> dict:
 def booking_status(username: str, question_id: int) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes
-    booked_answer, can_answer, did_answer, checked_answer, did_win = False, False, False, False, False
-    id = 0
+    # booked_answer, can_answer, did_answer, checked_answer, did_win = False, False, False, False, False
+    # id = 0
     data = {}
 
     get_booking_status_query = '''
@@ -211,12 +211,12 @@ def booking_status(username: str, question_id: int) -> dict:
         result = cursor.fetchone()
 
         if cursor.rowcount:
-            booked_answer = True
-            can_answer = True if result[0] else False
-            did_answer = True if result[1] else False
-            checked_answer = True if result[2] else False
-            did_win = True if result[3] else False
-            id = result[4]
+            data['booked_answer'] = True
+            data['can_answer'] = True if result[0] else False
+            data['did_answer'] = True if result[1] else False
+            data['checked_answer'] = True if result[2] else False
+            data['did_win'] = True if result[3] else False
+            data['id'] = result[4]
 
         successful_query = True
 
@@ -232,9 +232,6 @@ def booking_status(username: str, question_id: int) -> dict:
         cursor.close()
         db.close()
 
-        data['booked_answer'], data['can_answer'], data['checked_answer'] = booked_answer, can_answer, checked_answer
-        data['did_answer'], data['did_win'], data['id'] = did_answer, did_win, id
-
         return {'successful_query': successful_query, 'error': error, 'data': data}
 
 # gets the current active booking
@@ -246,20 +243,21 @@ def current_booking_to_deal(question_id: int) -> dict:
     data = {}
 
     get_booking_in_play = '''
-    SELECT placement, answering_queue_users_username, can_answer, did_answer, checked_answer, did_win, id
+    SELECT placement, answering_queue_users_username, can_answer, did_answer, answer, checked_answer, did_win, id
     FROM answering_queue
     WHERE answering_queue_questions_id = {0}
         AND can_answer = TRUE
+        AND checked_answer = FALSE
     '''.format(question_id)
 
     get_next_booking_query = '''
-    SELECT placement, answering_queue_users_username, can_answer, did_answer, checked_answer, did_win, id
+    SELECT placement, answering_queue_users_username, can_answer, did_answer, answer, checked_answer, did_win, id
     FROM answering_queue
     WHERE (answering_queue_questions_id, placement) IN (
         SELECT answering_queue_questions_id, MIN(placement)
         FROM answering_queue
         WHERE answering_queue_questions_id = {0}
-            AND checked_answer = FALSE
+            AND can_answer = FALSE
         )
     '''.format(question_id)
 
@@ -276,8 +274,8 @@ def current_booking_to_deal(question_id: int) -> dict:
                 result = cursor.fetchone()
 
         data['placement'], data['booker'], data['can_answer'] = result[0], result[1], result[2]
-        data['did_answer'], data['checked_answer'], data['did_win'] = result[3], result[4], result[5]
-        data['id'] = result[6]
+        data['did_answer'], data['answer'], data['checked_answer'] = result[3], result[4], result[5]
+        data['did_win'], data['id'] = result[6], result[7]
 
         successful_query = True
 
@@ -380,7 +378,8 @@ def validate_answer(booking_id: int, user_won: bool) -> dict:
 
     update_did_win_query = '''
         UPDATE answering_queue 
-        SET did_win = {0}
+        SET did_win = {0},
+            checked_answer = TRUE
         WHERE id = {1}
         '''.format(won, booking_id)
 

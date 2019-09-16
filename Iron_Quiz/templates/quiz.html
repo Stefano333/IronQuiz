@@ -1,7 +1,9 @@
 <h1>quiz</h1>
 
 {% with message = get_flashed_messages(category_filter=["hint"]) %}
-{% if quiz.status == quiz_status_list.USER_CAN_BOOK %}
+{% if quiz.status == quiz_status_list.NO_QUESTION %}
+<h3>Wait for a new question</h3>
+{% elif quiz.status == quiz_status_list.USER_CAN_BOOK %}
 <form method="POST">
     <input id="submit" name="submit_booking" type="submit" value="Book answer">
 </form>
@@ -27,3 +29,5 @@
 {% else %}
 {% endif %}
 {% endwith %}
+
+{{quiz.status}}
