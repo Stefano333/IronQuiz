@@ -373,6 +373,58 @@ def user_answered(booking_id: int, answer: str) -> dict:
         return {'successful_query': successful_query, 'error': error}
 
 
+def validate_answer(booking_id: int, user_won: bool) -> dict:
+    successful_query = False
+    error = ''  # will store eventual error codes
+    won = "TRUE" if user_won else "FALSE"
+
+    update_did_win_query = '''
+        UPDATE answering_queue 
+        SET did_win = {0}
+        WHERE id = {1}
+        '''.format(won, booking_id)
+
+    try:
+        db = mariadb.connect(**config)
+        cursor = db.cursor(buffered=True)
+        cursor.execute(update_did_win_query)
+
+        if cursor.rowcount:
+            db.commit()
+
+        if user_won:
+            update_close_question_query = '''
+                UPDATE questions
+                SET closed = TRUE
+                WHERE closed = FALSE
+            '''
+            cursor.execute(update_close_question_query)
+
+            print(cursor.rowcount)
+
+            if cursor.rowcount:
+                db.commit()
+
+        successful_query = True
+
+    except mariadb.Error as err:
+        error = err.errno
+
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+        error = err
+
+    finally:
+        cursor.close()
+        db.close()
+
+        return {'successful_query': successful_query, 'error': error}
+
+
 if __name__ == "__main__":
     db_host = os.environ.get('DB_HOST')
     db_user = os.environ.get('DB_USER')

@@ -21,6 +21,9 @@
 
     </ul>
 </form>
+
+{% elif data.status == quiz_status_list.USER_CAN_BOOK %}
+<h3>Waiting for users bookings</h3>
 {% elif data.status == quiz_status_list.USER_WAITING_ALLOWANCE_TO_ANSWER %}
 <ul>
     <li>Question: {{ data.current_question.question }}</li>
@@ -38,8 +41,8 @@
     <li>Answer: {{ data.current_booking.answer }}</li>
     <li>
         <form method="POST" action="/validate_answer/{{ data.current_booking.id }}">
-            <input id="right_answer" name="right_answer" type="submit" value="right_answer">
-            <input id="wrong_answer" name="wrong_answer" type="submit" value="wrong_answer">
+            <input id="right_answer" name="answer" type="submit" value="right">
+            <input id="wrong_answer" name="answer" type="submit" value="wrong">
         </form>
     </li>
 </ul>

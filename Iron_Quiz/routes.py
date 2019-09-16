@@ -42,10 +42,9 @@ def login():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     question_form = QuestionsForm()
-    current_question = get_current_question()['data']
-    current_question_id = current_question['id']
     logged_user = session.get('username')
     status = QuizStatus.NO_QUESTION
+    current_question = get_current_question()['data']
 
     data = {}
 
@@ -58,6 +57,7 @@ def admin():
             return redirect(url_for('admin'))
 
     if current_question:
+        current_question_id = current_question['id']
         status = QuizStatus.USER_CAN_BOOK
         current_booking = current_booking_to_deal(current_question_id)[
             'data']
@@ -100,6 +100,21 @@ def admin():
 @app.route('/allow_answer/<int:booking_id>', methods=['POST'])
 def allow_user_to_answer(booking_id: int):
     user_can_answer(booking_id)
+
+    return redirect(url_for('admin'))
+
+#
+@app.route('/validate_answer/<int:booking_id>', methods=['POST'])
+def answer_validated(booking_id: int):
+    if request.method == 'POST':
+        # user_won = True if request.form.to_dict(
+        #     Flat=True)['right_answer'] else False
+        if request.form.to_dict()['answer'] == "right":
+            user_won = True
+        else:
+            user_won = False
+
+        validate_answer(booking_id, user_won)
 
     return redirect(url_for('admin'))
 
