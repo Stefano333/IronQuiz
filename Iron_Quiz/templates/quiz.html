@@ -1,5 +1,9 @@
-<h1>quiz</h1>
+{% extends "base.html" %}
+{% block title %}Quiz{% endblock %}
+{% block head %}Quiz{% endblock %}
 
+
+{% block content %}
 {% with message = get_flashed_messages(category_filter=["hint"]) %}
 {% if quiz.status == quiz_status_list.NO_QUESTION %}
 <h3>Wait for a new question</h3>
@@ -30,4 +34,4 @@
 {% endif %}
 {% endwith %}
 
-{{quiz.status}}
+{% endblock %}

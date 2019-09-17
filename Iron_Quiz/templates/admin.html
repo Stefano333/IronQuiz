@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<h1>Admin</h1>
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block head %}Admin{% endblock %}
+
+{% block content %}
 {% if question_form %}
 <form method="post">
     {{ question_form.hidden_tag() }}
@@ -53,3 +56,5 @@
     <li>Wrong answer: {{ data.current_question.wrong_answer }}</li>
 </ul>
 {% endif %}
+
+{% endblock %}
