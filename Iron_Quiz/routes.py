@@ -1,4 +1,4 @@
-from Iron_Quiz import app
+from Iron_Quiz import app, socketio
 from flask import render_template, request, flash, redirect, url_for, session
 from Iron_Quiz.forms import LoginForm, QuestionsForm, AnswersForm
 # from flask_sqlalchemy import SQLAlchemy
@@ -118,6 +118,13 @@ def answer_validated(booking_id: int):
 
     return redirect(url_for('admin'))
 
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+@socketio.on('newQuestion')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
