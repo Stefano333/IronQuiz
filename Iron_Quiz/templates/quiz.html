@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Quiz{% endblock %}
+{% block user %}{{quiz.logged_user}}{% endblock %}
 {% block head %}Quiz{% endblock %}
 
 
@@ -8,7 +9,7 @@
 {% if quiz.status == quiz_status_list.NO_QUESTION %}
 <h3>Wait for a new question</h3>
 {% elif quiz.status == quiz_status_list.USER_CAN_BOOK %}
-<form method="POST">
+<form id="form" method="POST">
     <input id="submit" name="submit_booking" type="submit" value="Book answer">
 </form>
 {% elif quiz.status == quiz_status_list.USER_WAITING_ALLOWANCE_TO_ANSWER or
@@ -21,7 +22,7 @@
 {% endif %}
 {% elif quiz.status == quiz_status_list.USER_CAN_ANSWER %}
 <h3>{{ quiz.current_question.question }}?</h3>
-<form method="POST" action="/submit_answer/{{quiz.user_booking_status.id}}">
+<form id="form" method="POST" action="quiz/submit_answer/{{quiz.user_booking_status.id}}">
     {{ quiz.answer_form.hidden_tag() }}
     {{ quiz.answer_form.answer }}
     {% for error in quiz.answer_form.answer.errors %}
@@ -33,5 +34,7 @@
 {% else %}
 {% endif %}
 {% endwith %}
+
+{{quiz.status}}
 
 {% endblock %}

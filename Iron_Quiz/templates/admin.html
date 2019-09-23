@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Admin{% endblock %}
+{% block user %}{{data.logged_user}}{% endblock %}
 {% block head %}Admin{% endblock %}
 
 {% block content %}
 {% if question_form %}
-<form method="post">
+<form id="form" method="post">
     {{ question_form.hidden_tag() }}
     <ul>
         <li>{{ question_form.question }}</li>
@@ -32,7 +33,7 @@
     <li>Question: {{ data.current_question.question }}</li>
     <li>Booker: {{ data.current_booking.booker }}</li>
     <li>
-        <form method="POST" action="/allow_answer/{{ data.current_booking.id }}">
+        <form method="POST" action="/admin/allow_answer/{{ data.current_booking.id }}">
             <input id="allow_answer" name="allow_answer" type="submit" value={{ data.current_booking.booker }}>
         </form>
     </li>
@@ -43,7 +44,7 @@
     <li>Question: {{ data.current_question.question }}</li>
     <li>Answer: {{ data.current_booking.answer }}</li>
     <li>
-        <form method="POST" action="/validate_answer/{{ data.current_booking.id }}">
+        <form id="form" method="POST" action="/admin/validate_answer/{{ data.current_booking.id }}">
             <input id="right_answer" name="answer" type="submit" value="right">
             <input id="wrong_answer" name="answer" type="submit" value="wrong">
         </form>
@@ -56,5 +57,4 @@
     <li>Wrong answer: {{ data.current_question.wrong_answer }}</li>
 </ul>
 {% endif %}
-
 {% endblock %}

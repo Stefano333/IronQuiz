@@ -13,7 +13,7 @@ def home():
     logged_in = session.get('logged_in')
     logged_user = session.get('username')
 
-    if not logged_in:
+    if not logged_in and not logged_user:
         return redirect(url_for('login'))
     elif logged_in and logged_user:
         if logged_user == 'admin':
@@ -21,6 +21,10 @@ def home():
         else:
             return redirect(url_for('quiz'))
 
+
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return User.get(user_id)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -90,25 +94,29 @@ def admin():
                 status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
 
         data['current_question'], data['current_booking'] = current_question, current_booking
-        data['status'] = status
+        data['status'], data['logged_user'] = status, logged_user
 
         return render_template('admin.html', data=data, quiz_status_list=QuizStatus)
         # return render_template('admin.html', current_question=current_question)
-    return render_template('admin.html', question_form=question_form)
+
+    data['logged_user'] = logged_user
+
+    return render_template('admin.html', question_form=question_form, data=data)
 
 #
-@app.route('/allow_answer/<int:booking_id>', methods=['POST'])
+@app.route('/admin/allow_answer/<int:booking_id>', methods=['POST'])
 def allow_user_to_answer(booking_id: int):
     user_can_answer(booking_id)
 
     return redirect(url_for('admin'))
 
 #
-@app.route('/validate_answer/<int:booking_id>', methods=['POST'])
+@app.route('/admin/validate_answer/<int:booking_id>', methods=['POST'])
 def answer_validated(booking_id: int):
     if request.method == 'POST':
         # user_won = True if request.form.to_dict(
         #     Flat=True)['right_answer'] else False
+        print("dict: {}".format(request.form.to_dict()))
         if request.form.to_dict()['answer'] == "right":
             user_won = True
         else:
@@ -118,13 +126,42 @@ def answer_validated(booking_id: int):
 
     return redirect(url_for('admin'))
 
+
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
-@socketio.on('newQuestion')
+
+@socketio.on('socketIsConnected')
+def socket_is_connected():
+    print('socket connected')
+
+
+@socketio.on('submittingForm')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
-    socketio.emit('my response', json, callback=messageReceived)
+    logged_user = session.get('username')
+    current_booker = ''
+    current_question_id = 0
+
+    try:
+        current_question_id = get_current_question()['data']['id']
+
+        if(current_question_id):
+            current_booker = current_booking_to_deal(current_question_id)[
+                'data']['booker']
+    except KeyError:
+        if not current_question_id:
+            current_question_id = 0
+
+        current_booker = ''
+
+    finally:
+        print("questionID: {2}, booker: {0}, logged: {1}".format(
+            current_booker, logged_user, current_question_id))
+        # socketio.emit('reload', callback=messageReceived())
+        print("eccoci!!!!!!")
+        socketio.emit('reload', current_booker)
+
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
@@ -182,12 +219,12 @@ def quiz():
 
         quiz['user_booking_status'], quiz['answer_form'] = user_booking_status, answer_form
 
-    quiz['status'] = status
+    quiz['status'], quiz['logged_user'] = status, logged_user
 
     return render_template('quiz.html', quiz=quiz, quiz_status_list=QuizStatus)
 
 
-@app.route('/submit_answer/<int:booking_id>', methods=['POST'])
+@app.route('/quiz/submit_answer/<int:booking_id>', methods=['POST'])
 def allow_answered(booking_id: int):
     if request.method == 'POST':
         answer = request.form.to_dict(flat=True)['answer']
