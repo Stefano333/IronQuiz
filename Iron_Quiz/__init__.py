@@ -1,15 +1,15 @@
 #import eventlet
 from flask import Flask
 from config import Config
+# import flask_login
 from flask_socketio import SocketIO
-# from flask_login import *
 # from flask_bootstrap import Bootstrap
 
 #eventlet.monkey_patch()
 application = Flask(__name__)
 application.config.from_object(Config)
-# login_manager = LoginManager()
 
+# login_manager = flask_login.LoginManager()
 # login_manager.init_app(application)
 
 

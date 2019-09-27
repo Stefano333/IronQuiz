@@ -5,7 +5,7 @@
 
 {% block content %}
 {% if question_form %}
-<form id="form" method="post">
+<form id="question-form" method="post">
     {{ question_form.hidden_tag() }}
     <ul>
         <li>{{ question_form.question }}</li>
@@ -20,7 +20,7 @@
         {% for error in question_form.wrong_answer.errors %}
         <li><span style="color: red;">[{{ error }}]</span></li>
         {% endfor %}
-        <li>{{ question_form.submit }}</li>
+        <li>{{ question_form.submit_new_question }}</li>
 
 
     </ul>
@@ -33,8 +33,8 @@
     <li>Question: {{ data.current_question.question }}</li>
     <li>Booker: {{ data.current_booking.booker }}</li>
     <li>
-        <form method="POST" action="/admin/allow_answer/{{ data.current_booking.id }}">
-            <input id="allow_answer" name="allow_answer" type="submit" value={{ data.current_booking.booker }}>
+        <form id="allow-answer-form" method="POST" action="/admin/allow_answer/{{ data.current_booking.id }}">
+            <input id="submit-allow-answer" name="allow_answer" type="submit" value={{ data.current_booking.booker }}>
         </form>
     </li>
 </ul>
@@ -44,9 +44,9 @@
     <li>Question: {{ data.current_question.question }}</li>
     <li>Answer: {{ data.current_booking.answer }}</li>
     <li>
-        <form id="form" method="POST" action="/admin/validate_answer/{{ data.current_booking.id }}">
-            <input id="right_answer" name="answer" type="submit" value="right">
-            <input id="wrong_answer" name="answer" type="submit" value="wrong">
+        <form id="validate-answer-form" method="POST" action="/admin/validate_answer/{{ data.current_booking.id }}">
+            <input id="right-answer" name="answer" type="submit" value="right">
+            <input id="wrong-answer" name="answer" type="submit" value="wrong">
         </form>
     </li>
 </ul>

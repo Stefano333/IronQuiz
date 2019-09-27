@@ -7,6 +7,8 @@ from Iron_Quiz.dbconfig import *
 from werkzeug.datastructures import ImmutableMultiDict
 from Iron_Quiz.data_types import QuizStatus
 
+room = {}
+
 
 @app.route('/')
 def home():
@@ -108,6 +110,11 @@ def admin():
 def allow_user_to_answer(booking_id: int):
     user_can_answer(booking_id)
 
+    active_clients = {user: sid['sid']
+                      for (user, sid) in room.items() if user != "admin"}
+    for user, sid in active_clients.items():
+        socketio.emit('reloadClient', room=sid)
+
     return redirect(url_for('admin'))
 
 #
@@ -133,7 +140,23 @@ def messageReceived(methods=['GET', 'POST']):
 
 @socketio.on('socketIsConnected')
 def socket_is_connected():
-    print('socket connected')
+    logged_user = session['username']
+
+    room[logged_user] = {'sid': request.sid}
+
+
+@socketio.on('reloadAllClients')
+def reload_all_clients():
+    active_clients = {user: sid['sid']
+                      for (user, sid) in room.items() if user != "admin"}
+
+    print(active_clients)
+
+    for user, sid in active_clients.items():
+        socketio.emit('reloadClient', room=sid)
+
+        print("room: {}".format(room))
+        print("sid: {}".format(sid))
 
 
 @socketio.on('submittingForm')
@@ -160,7 +183,9 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
             current_booker, logged_user, current_question_id))
         # socketio.emit('reload', callback=messageReceived())
         print("eccoci!!!!!!")
-        socketio.emit('reload', current_booker)
+        print(room)
+        print(room[current_booker]['sid'])
+        socketio.emit('reload', room=room[current_booker]['sid'])
 
 
 @app.route('/quiz', methods=['GET', 'POST'])

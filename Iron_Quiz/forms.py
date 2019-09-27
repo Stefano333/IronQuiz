@@ -16,7 +16,7 @@ class QuestionsForm(FlaskForm):
         min=1)], render_kw={"placeholder": "Right answer"})
     wrong_answer = StringField('Wrong answer', [validators.Length(
         min=1)], render_kw={"placeholder": "Wrong answer"})
-    submit = SubmitField('Submit question')
+    submit_new_question = SubmitField('Submit question')
 
 
 class AnswersForm(FlaskForm):
