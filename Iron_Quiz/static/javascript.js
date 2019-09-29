@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   socket.on('reloadClient', function () {
     console.log('reloading this client...');
 
-    location.reload();
+    window.location = window.location;
+    // location.reload();
 
   })
 

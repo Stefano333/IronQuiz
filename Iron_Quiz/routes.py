@@ -10,6 +10,20 @@ from Iron_Quiz.data_types import QuizStatus
 room = {}
 
 
+def reload_client_sessions(username=''):
+    if not username:
+        print('no')
+        active_clients = {user: sid['sid']
+                          for (user, sid) in room.items() if user != "admin"}
+        for user, sid in active_clients.items():
+            socketio.emit('reloadClient', room=sid)
+
+    else:
+        print("si")
+        sid = room[username]['sid']
+        socketio.emit('reloadClient', room=sid)
+
+
 @app.route('/')
 def home():
     logged_in = session.get('logged_in')
@@ -58,6 +72,9 @@ def admin():
         if question_form.validate_on_submit():
             insert_new_question(question_form.question.data,
                                 question_form.right_answer.data, question_form.wrong_answer.data)
+
+            reload_client_sessions()
+
             status = QuizStatus.USER_CAN_BOOK
 
             return redirect(url_for('admin'))
@@ -109,11 +126,9 @@ def admin():
 @app.route('/admin/allow_answer/<int:booking_id>', methods=['POST'])
 def allow_user_to_answer(booking_id: int):
     user_can_answer(booking_id)
+    current_booker = get_current_booker(booking_id)['data']['booker']
 
-    active_clients = {user: sid['sid']
-                      for (user, sid) in room.items() if user != "admin"}
-    for user, sid in active_clients.items():
-        socketio.emit('reloadClient', room=sid)
+    reload_client_sessions(current_booker)
 
     return redirect(url_for('admin'))
 
@@ -131,6 +146,12 @@ def answer_validated(booking_id: int):
 
         validate_answer(booking_id, user_won)
 
+        if user_won:
+            reload_client_sessions()
+        else:
+            current_booker = get_current_booker(booking_id)['data']['booker']
+            reload_client_sessions(current_booker)
+
     return redirect(url_for('admin'))
 
 
@@ -143,49 +164,6 @@ def socket_is_connected():
     logged_user = session['username']
 
     room[logged_user] = {'sid': request.sid}
-
-
-@socketio.on('reloadAllClients')
-def reload_all_clients():
-    active_clients = {user: sid['sid']
-                      for (user, sid) in room.items() if user != "admin"}
-
-    print(active_clients)
-
-    for user, sid in active_clients.items():
-        socketio.emit('reloadClient', room=sid)
-
-        print("room: {}".format(room))
-        print("sid: {}".format(sid))
-
-
-@socketio.on('submittingForm')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print('received my event: ' + str(json))
-    logged_user = session.get('username')
-    current_booker = ''
-    current_question_id = 0
-
-    try:
-        current_question_id = get_current_question()['data']['id']
-
-        if(current_question_id):
-            current_booker = current_booking_to_deal(current_question_id)[
-                'data']['booker']
-    except KeyError:
-        if not current_question_id:
-            current_question_id = 0
-
-        current_booker = ''
-
-    finally:
-        print("questionID: {2}, booker: {0}, logged: {1}".format(
-            current_booker, logged_user, current_question_id))
-        # socketio.emit('reload', callback=messageReceived())
-        print("eccoci!!!!!!")
-        print(room)
-        print(room[current_booker]['sid'])
-        socketio.emit('reload', room=room[current_booker]['sid'])
 
 
 @app.route('/quiz', methods=['GET', 'POST'])
@@ -206,9 +184,18 @@ def quiz():
     if request.method == 'POST':
         # form_data = request.form.to_dict(flat=False)
         if not user_booking_status:
+
+            print("current_booking before: {}".format(current_booking_to_deal(current_question_id)[
+                'data']))
+
             book_answer(logged_user, current_question_id)
 
-            redirect(url_for('quiz'))
+            user_booking_status = booking_status(
+                logged_user, current_question_id)['data']
+
+            reload_client_sessions('admin')
+
+            return redirect(url_for('quiz'))
 
     if user_booking_status:
         booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
@@ -251,9 +238,11 @@ def quiz():
 
 @app.route('/quiz/submit_answer/<int:booking_id>', methods=['POST'])
 def allow_answered(booking_id: int):
-    if request.method == 'POST':
-        answer = request.form.to_dict(flat=True)['answer']
+    answer = request.form.to_dict(flat=True)['answer']
 
-        user_answered(booking_id, answer)
+    user_answered(booking_id, answer)
+    print("sono qui")
 
-        return redirect(url_for('quiz'))
+    reload_client_sessions('admin')
+
+    return redirect(url_for('quiz'))
