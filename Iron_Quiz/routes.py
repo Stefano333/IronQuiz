@@ -53,7 +53,7 @@ def login():
             if username == 'admin':
                 return redirect(url_for('admin'))
             else:
-                get_user(username)
+                add_new_user(username)
                 return redirect(url_for('quiz'))
     return render_template('login.html', form=login_form)
 

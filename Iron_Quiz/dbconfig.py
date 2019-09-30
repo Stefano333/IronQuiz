@@ -13,7 +13,7 @@ config = {
 # checks if user is registered, otherwise it registers him
 
 
-def get_user(user_to_search: str) -> dict:
+def add_new_user(user_to_search: str) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes
     added_new_user = True
