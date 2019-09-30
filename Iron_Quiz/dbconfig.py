@@ -371,6 +371,45 @@ def get_current_booker(booking_id: int) -> dict:
         return {'successful_query': successful_query, 'error': error, 'data': data}
 
 
+def get_next_booker(booking_id: int) -> dict:
+    successful_query = False
+    error = ''  # will store eventual error codes
+    # booked_answer, can_answer, did_answer, checked_answer, did_win = False, False, False, False, False
+    # id = 0
+    data = {}
+
+    get_booker_query = '''
+    SELECT answering_queue_users_username
+    FROM answering_queue
+    WHERE id = {0}
+    '''.format(booking_id + 1)
+
+    try:
+        db = mariadb.connect(**config)
+        cursor = db.cursor(buffered=True)
+        cursor.execute(get_booker_query)
+        result = cursor.fetchone()
+
+        if cursor.rowcount:
+            data['booker'] = result[0]
+
+        successful_query = True
+
+    except mariadb.Error as err:
+        error = err
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+    finally:
+        cursor.close()
+        db.close()
+
+        return {'successful_query': successful_query, 'error': error, 'data': data}
+
+
 def user_answered(booking_id: int, answer: str) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes

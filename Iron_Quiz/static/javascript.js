@@ -33,5 +33,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     location.reload();
 
+    socket.onerror = function (error) {
+      console.error('There was an un-identified Web Socket error');
+    };
   })
 })

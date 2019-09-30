@@ -10,18 +10,17 @@ from Iron_Quiz.data_types import QuizStatus
 room = {}
 
 
-def reload_client_sessions(username=''):
-    if not username:
-        print('no')
+def reload_client_sessions(*args: str):
+    if not args:
         active_clients = {user: sid['sid']
                           for (user, sid) in room.items() if user != "admin"}
         for user, sid in active_clients.items():
             socketio.emit('reloadClient', room=sid)
-
     else:
-        print("si")
-        sid = room[username]['sid']
-        socketio.emit('reloadClient', room=sid)
+        for username in args:
+            sid = room[username]['sid']
+            socketio.emit('reloadClient', room=sid)
+            print('reloading {}''s session'.format(username))
 
 
 @app.route('/')
@@ -138,7 +137,6 @@ def answer_validated(booking_id: int):
     if request.method == 'POST':
         # user_won = True if request.form.to_dict(
         #     Flat=True)['right_answer'] else False
-        print("dict: {}".format(request.form.to_dict()))
         if request.form.to_dict()['answer'] == "right":
             user_won = True
         else:
@@ -150,7 +148,12 @@ def answer_validated(booking_id: int):
             reload_client_sessions()
         else:
             current_booker = get_current_booker(booking_id)['data']['booker']
-            reload_client_sessions(current_booker)
+            next_booker = get_next_booker(booking_id)['data']['booker']
+
+            if next_booker:
+                reload_client_sessions(current_booker, next_booker)
+            else:
+                reload_client_sessions(current_booker)
 
     return redirect(url_for('admin'))
 
