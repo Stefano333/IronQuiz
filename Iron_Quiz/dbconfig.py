@@ -119,7 +119,7 @@ def get_current_question() -> dict:
             question_data['question'] = current_answer[1]
             question_data['right_answer'] = current_answer[2]
             question_data['wrong_answer'] = current_answer[3]
-            question_data['closed'] = current_answer[3]
+            question_data['closed'] = current_answer[4]
 
         successful_query = True
 
@@ -500,6 +500,66 @@ def validate_answer(booking_id: int, user_won: bool) -> dict:
         db.close()
 
         return {'successful_query': successful_query, 'error': error}
+
+
+def get_winner(question_id: int, logged_user: str) -> dict:
+    successful_query = False
+    error = ''  # will store eventual error codes
+    data = {}
+
+    get_last_closed_question_query = '''
+    SELECT id 
+    FROM questions 
+    WHERE closed = TRUE 
+    ORDER BY id DESC LIMIT 1
+    '''
+
+    try:
+        db = mariadb.connect(**config)
+        cursor = db.cursor(buffered=True)
+        cursor.execute(get_last_closed_question_query)
+
+        if cursor.rowcount:
+            print("count 1 : {}".format(cursor.rowcount))
+            result = cursor.fetchone()
+            question_id = result[0]
+
+            get_winner_query = '''
+            SELECT placement, answering_queue_users_username, can_answer, did_answer, answer, checked_answer, did_win, id
+            FROM answering_queue
+            WHERE answering_queue_questions_id = {0}
+                AND answering_queue_users_username = '{1}'
+                AND did_win = TRUE
+            ORDER BY id DESC
+            LIMIT 1
+            '''.format(question_id, logged_user)
+
+            cursor.execute(get_winner_query)
+
+            if cursor.rowcount:
+                result = cursor.fetchone()
+
+                data['placement'], data['booker'], data['can_answer'] = result[0], result[1], result[2]
+                data['did_answer'], data['answer'], data['checked_answer'] = result[3], result[4], result[5]
+                data['did_win'], data['id'] = result[6], result[7]
+
+        successful_query = True
+
+    except mariadb.Error as err:
+        error = err
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+    finally:
+        cursor.close()
+        db.close()
+
+        print("data: {}".format(data))
+
+        return {'successful_query': successful_query, 'error': error, 'data': data}
 
 
 if __name__ == "__main__":

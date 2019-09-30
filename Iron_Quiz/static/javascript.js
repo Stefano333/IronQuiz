@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", function (event) {
   let socket = io.connect(document.domain + ':' + location.port);
+  // manager = new socket.Manager('/socket.io', )
 
   socket.on('connect', function () {
     console.log('connected!');

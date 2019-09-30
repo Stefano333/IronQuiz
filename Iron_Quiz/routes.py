@@ -16,11 +16,13 @@ def reload_client_sessions(*args: str):
                           for (user, sid) in room.items() if user != "admin"}
         for user, sid in active_clients.items():
             socketio.emit('reloadClient', room=sid)
+        print("reload all clients: {}".format(active_clients))
     else:
+        print("reload some clients")
         for username in args:
             sid = room[username]['sid']
             socketio.emit('reloadClient', room=sid)
-            print('reloading {}''s session'.format(username))
+            print("user: {}".format(username))
 
 
 @app.route('/')
@@ -174,23 +176,24 @@ def quiz():
     answer_form = AnswersForm()
     quiz = {}
     user_booking_status = {}
+    current_question_id = 0
 
     logged_user = session.get('username')
     status = QuizStatus.NO_QUESTION
 
-    if get_current_question()['data']:
-        current_question_id = get_current_question()['data']['id']
+    try:
+        current_question = get_current_question()['data']
+        current_question_id = current_question['id']
         user_booking_status = booking_status(
             logged_user, current_question_id)['data']
         status = QuizStatus.USER_CAN_BOOK
+    except KeyError:
+        print("there's a problem: {}".format(current_question))
+        pass
 
     if request.method == 'POST':
         # form_data = request.form.to_dict(flat=False)
         if not user_booking_status:
-
-            print("current_booking before: {}".format(current_booking_to_deal(current_question_id)[
-                'data']))
-
             book_answer(logged_user, current_question_id)
 
             user_booking_status = booking_status(
@@ -199,6 +202,9 @@ def quiz():
             reload_client_sessions('admin')
 
             return redirect(url_for('quiz'))
+
+    print("user_booking_status: {}".format(user_booking_status))
+    print("current question id: {}".format(current_question_id))
 
     if user_booking_status:
         booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']
@@ -222,10 +228,10 @@ def quiz():
 
             flash('Wait for answer validation', 'hint')
 
-        elif checked_answer and did_win:
-            status = QuizStatus.USER_WON
+        # elif checked_answer and did_win:
+        #     status = QuizStatus.USER_WON
 
-            flash('You won!', 'hint')
+        #     flash('You won!', 'hint')
 
         elif checked_answer and not did_win:
             status = QuizStatus.USER_LOST
@@ -233,6 +239,11 @@ def quiz():
             flash('Your answer was not right!', 'hint')
 
         quiz['user_booking_status'], quiz['answer_form'] = user_booking_status, answer_form
+    else:
+        if not current_question and get_winner(current_question_id, logged_user)['data']:
+            status = QuizStatus.USER_WON
+
+            flash('You won!', 'hint')
 
     quiz['status'], quiz['logged_user'] = status, logged_user
 
