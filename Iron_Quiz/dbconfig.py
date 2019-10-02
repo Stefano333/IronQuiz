@@ -102,24 +102,44 @@ def get_current_question() -> dict:
     error = ''  # will store eventual error codes
     question_data = {}
 
-    query = '''
+    not_closed_question_query = '''
     SELECT *
     FROM questions
     WHERE closed = FALSE
     '''
 
+    last_closed_question_query = '''
+    SELECT *
+    FROM questions
+    WHERE closed = TRUE
+    ORDER BY id DESC
+    LIMIT 1
+    '''
+
     try:
         db = mariadb.connect(**config)
         cursor = db.cursor(buffered=True)
-        cursor.execute(query)
-        current_answer = cursor.fetchone()
+        cursor.execute(not_closed_question_query)
+        current_question = cursor.fetchone()
 
         if cursor.rowcount:
-            question_data['id'] = current_answer[0]
-            question_data['question'] = current_answer[1]
-            question_data['right_answer'] = current_answer[2]
-            question_data['wrong_answer'] = current_answer[3]
-            question_data['closed'] = current_answer[4]
+            print("vincitore")
+            question_data['id'] = current_question[0]
+            question_data['question'] = current_question[1]
+            question_data['right_answer'] = current_question[2]
+            question_data['wrong_answer'] = current_question[3]
+            question_data['closed'] = current_question[4]
+        else:
+            print("sconfitto")
+            cursor.execute(last_closed_question_query)
+            current_question = cursor.fetchone()
+
+            if cursor.rowcount:
+                question_data['id'] = current_question[0]
+                question_data['question'] = current_question[1]
+                question_data['right_answer'] = current_question[2]
+                question_data['wrong_answer'] = current_question[3]
+                question_data['closed'] = current_question[4]
 
         successful_query = True
 
@@ -134,6 +154,8 @@ def get_current_question() -> dict:
     finally:
         cursor.close()
         db.close()
+
+        # print("{}, {}, {}".format(current_question[0], current_question[1], current_question[2]))
 
         return {'successful_query': successful_query, 'error': error, 'data': question_data}
 

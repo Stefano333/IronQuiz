@@ -188,7 +188,6 @@ def quiz():
             logged_user, current_question_id)['data']
         status = QuizStatus.USER_CAN_BOOK
     except KeyError:
-        print("there's a problem: {}".format(current_question))
         pass
 
     if request.method == 'POST':

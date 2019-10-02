@@ -7,18 +7,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
   socket.on('connect', function () {
     console.log('connected!');
     socket.emit('socketIsConnected')
-
-    // if (document.getElementsByTagName('input').length) {
-    //   for (let input of document.getElementsByTagName('input')) {
-    //     if (input["type"] === "submit" && input["id"] === "submit_new_question") {
-    //       input.addEventListener('mouseup', function (e) {
-    //         socket.emit('reloadAllClients');
-
-    //         console.log("yeeee");
-    //       })
-    //     }
-    //   }
-    // }
   })
 
   socket.on('reloadClient', function () {
