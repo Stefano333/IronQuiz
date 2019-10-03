@@ -5,10 +5,9 @@ from Iron_Quiz.forms import LoginForm, QuestionsForm, AnswersForm
 # from flask_migrate import Migrate
 from Iron_Quiz.dbconfig import *
 from werkzeug.datastructures import ImmutableMultiDict
-from Iron_Quiz.data_types import QuizStatus
+from Iron_Quiz.quiz_status import QuizStatus, Quiz
 
 room = {}
-
 
 def reload_client_sessions(*args: str):
     if not args:
@@ -63,8 +62,9 @@ def login():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     question_form = QuestionsForm()
+    quiz = Quiz()
+
     logged_user = session.get('username')
-    status = QuizStatus.NO_QUESTION
     current_question = get_current_question()['data']
 
     data = {}
@@ -76,7 +76,7 @@ def admin():
 
             reload_client_sessions()
 
-            status = QuizStatus.USER_CAN_BOOK
+            status = quiz.get_status(current_question)
 
             return redirect(url_for('admin'))
 
@@ -87,6 +87,7 @@ def admin():
             'data']
 
         if current_booking:
+            print("current booking: {}".format(current_booking))
             current_booking_placement = current_booking['placement']
             current_booker = current_booking['booker']
             current_booker_can_answer = current_booking['can_answer']
@@ -111,7 +112,7 @@ def admin():
                 # go to user_won page
 
             elif checked_answer and not current_booker_did_win:
-                status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+                status = QuizStatus.USER_LOST
 
         data['current_question'], data['current_booking'] = current_question, current_booking
         data['status'], data['logged_user'] = status, logged_user
@@ -204,6 +205,7 @@ def quiz():
 
     print("user_booking_status: {}".format(user_booking_status))
     print("current question id: {}".format(current_question_id))
+    print("current user: {}".format(logged_user))
 
     if user_booking_status:
         booked_answer, can_answer = user_booking_status['booked_answer'], user_booking_status['can_answer']

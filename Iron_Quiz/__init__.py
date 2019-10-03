@@ -4,6 +4,7 @@ from config import Config
 # import flask_login
 from flask_socketio import SocketIO
 # from flask_bootstrap import Bootstrap
+from Iron_Quiz.quiz_status import Quiz
 
 #eventlet.monkey_patch()
 application = Flask(__name__)
