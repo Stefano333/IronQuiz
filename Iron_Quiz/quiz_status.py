@@ -11,38 +11,33 @@ class QuizStatus(Enum):
     USER_LOST = auto()
 
 class Quiz():
-    ciao = "a"
-
     def __init__(self):
-        self.status = QuizStatus.NO_QUESTION
-    
+        self._status = QuizStatus.NO_QUESTION
+
     def get_status(self, question: dict, booked_answer=False, can_answer=False, 
                     did_answer=False, checked_answer=False, did_win=False, question_id=0):
-        self.question = question
-        self.booked_answer, self.can_answer = booked_answer, can_answer
-        self.did_answer, self.checked_answer = did_answer, checked_answer
-        self.did_win, self.id = did_win, id
+        self._question = question
+        self._booked_answer, self._can_answer = booked_answer, can_answer
+        self._did_answer, self._checked_answer = did_answer, checked_answer
+        self._did_win, self._id = did_win, id
 
-        if not question:
-            self.status = QuizStatus.NO_QUESTION
+        if not booked_answer:
+            self._status = QuizStatus.USER_CAN_BOOK
 
-        elif not booked_answer:
-            self.status = QuizStatus.USER_CAN_BOOK
+        elif self._booked_answer and not self._can_answer:
+            self._status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+        
+        elif self._can_answer and not self._did_answer:
+            self._status = QuizStatus.USER_CAN_ANSWER
 
-        elif self.booked_answer and not self.can_answer:
-            self.status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+        elif self._did_answer and not self._checked_answer:
+            self._status = QuizStatus.USER_WAITING_VALIDATION
         
-        elif self.can_answer and not self.did_answer:
-            self.status = QuizStatus.USER_CAN_ANSWER
-
-        elif self.did_answer and not self.checked_answer:
-            self.status = QuizStatus.USER_WAITING_VALIDATION
+        elif self._checked_answer and not self._did_win:
+            self._status = QuizStatus.USER_LOST
         
-        elif self.checked_answer and not self.did_win:
-            self.status = QuizStatus.USER_LOST
+        elif self._checked_answer and self._did_win:
+            self._status = QuizStatus.USER_WON
         
-        elif self.checked_answer and self.did_win:
-            self.status = QuizStatus.USER_WON
-        
-        return self.status
+        return self._status
 

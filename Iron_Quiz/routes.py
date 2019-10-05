@@ -24,6 +24,8 @@ def reload_client_sessions(*args: str):
             print("user: {}".format(username))
 
 
+
+
 @app.route('/')
 def home():
     logged_in = session.get('logged_in')
@@ -62,7 +64,6 @@ def login():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     question_form = QuestionsForm()
-    quiz = Quiz()
 
     logged_user = session.get('username')
     current_question = get_current_question()['data']
