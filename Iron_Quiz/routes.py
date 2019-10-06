@@ -5,7 +5,7 @@ from Iron_Quiz.forms import LoginForm, QuestionsForm, AnswersForm
 # from flask_migrate import Migrate
 from Iron_Quiz.dbconfig import *
 from werkzeug.datastructures import ImmutableMultiDict
-from Iron_Quiz.quiz_status import QuizStatus
+from Iron_Quiz.quiz_status import QuizStatus, Quiz
 
 room = {}
 
@@ -64,10 +64,15 @@ def login():
 def admin():
     question_form = QuestionsForm()
     logged_user = session.get('username')
+    quiz_session = Quiz()
     # status = QuizStatus.NO_QUESTION
-    current_question = get_current_question()['data']
-
     data = {}
+
+    try:
+        current_question = get_current_question()['data']
+
+    except KeyError:
+        current_question = {}
 
     if request.method == 'POST':
         if question_form.validate_on_submit():
@@ -76,7 +81,8 @@ def admin():
 
             reload_client_sessions()
 
-            status = QuizStatus.USER_CAN_BOOK
+            # status = QuizStatus.USER_CAN_BOOK
+            status = quiz_session.get_status(current_question)
 
             return redirect(url_for('admin'))
 
