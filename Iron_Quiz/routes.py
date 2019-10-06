@@ -88,7 +88,7 @@ def admin():
 
     if current_question:
         current_question_id = current_question['id']
-        status = QuizStatus.USER_CAN_BOOK
+        status = quiz_session.get_status(current_question)
         current_booking = current_booking_to_deal(current_question_id)[
             'data']
 
@@ -101,23 +101,24 @@ def admin():
             current_booker_did_win = current_booking['did_win']
 
             if current_booker and not current_booker_can_answer:
-                status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+                status = quiz_session.get_status(current_question, current_booker, current_booker_can_answer,
+                                                 current_booker_did_answer, checked_answer, current_booker_did_win)
                 # show the first user in queue for answer and button to allow him
 
             elif current_booker_can_answer and not current_booker_did_answer:
-                status = QuizStatus.USER_CAN_ANSWER
+                status = quiz_session.get_status(current_question)
                 # show question and message "waiting for answer" by
 
             elif current_booker_did_answer and not checked_answer:
-                status = QuizStatus.USER_WAITING_VALIDATION
+                status = quiz_session.get_status(current_question)
                 # show question, right answer and user's answer
 
             elif checked_answer and current_booker_did_win:
-                status = QuizStatus.USER_WON
+                status = quiz_session.get_status(current_question)
                 # go to user_won page
 
             elif checked_answer and not current_booker_did_win:
-                status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
+                status = quiz_session.get_status(current_question)
 
         data['current_question'], data['current_booking'] = current_question, current_booking
         data['status'], data['logged_user'] = status, logged_user
