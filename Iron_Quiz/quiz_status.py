@@ -19,16 +19,6 @@ class Quiz():
         self._did_answer, self._checked_answer = did_answer, checked_answer
         self._did_win, self._id = did_win, id
 
-        print('''
-        question: {}
-        booked answer: {}
-        can answer: {}
-        did answer: {}
-        checked answer: {}
-        did win: {}
-        id_ {}
-        '''.format(self._question, self._booked_answer, self._can_answer, self._did_answer, self._checked_answer, self._did_win, self._id))
-
         if not question:
             self._status = QuizStatus.NO_QUESTION
             print(self._status)
