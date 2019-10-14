@@ -4,7 +4,7 @@
 {% block head %}Admin{% endblock %}
 
 {% block content %}
-{% if question_form %}
+{% if data.status == quiz_status_list.NO_QUESTION %}
 <form id="question-form" method="post">
     {{ question_form.hidden_tag() }}
     <ul>

@@ -9,6 +9,7 @@ from Iron_Quiz.quiz_status import QuizStatus, Quiz
 
 room = {}
 
+
 def reload_client_sessions(*args: str):
     if not args:
         active_clients = {user: sid['sid']
@@ -22,8 +23,6 @@ def reload_client_sessions(*args: str):
             sid = room[username]['sid']
             socketio.emit('reloadClient', room=sid)
             print("user: {}".format(username))
-
-
 
 
 @app.route('/')
@@ -73,6 +72,7 @@ def admin():
     try:
         current_question = get_current_question()['data']
         current_question_id = current_question['id']
+        current_question_closed = current_question['closed']
     except KeyError:
         current_question = {}
         current_question_id = 0
@@ -82,7 +82,8 @@ def admin():
             insert_new_question(question_form.question.data,
                                 question_form.right_answer.data, question_form.wrong_answer.data)
 
-            status = quiz_session.get_status(current_question)
+            status = quiz_session.get_status(
+                current_question, current_question_closed)
 
             reload_client_sessions()
 
@@ -92,7 +93,8 @@ def admin():
         # current_question_id = current_question['id']
         current_booking = current_booking_to_deal(current_question_id)[
             'data']
-        status = quiz_session.get_status(current_question)
+        status = quiz_session.get_status(
+            current_question, current_question_closed)
 
         if current_booking:
             print("current booking: {}".format(current_booking))
@@ -103,18 +105,18 @@ def admin():
             checked_answer = current_booking['checked_answer']
             current_booker_did_win = current_booking['did_win']
 
-            status = quiz_session.get_status(current_question, current_booker, current_booker_can_answer,
+            status = quiz_session.get_status(current_question, current_question_closed, current_booker, current_booker_can_answer,
                                              current_booker_did_answer, checked_answer, current_booker_did_win)
 
         data['current_question'], data['current_booking'] = current_question, current_booking
         data['status'], data['logged_user'] = status, logged_user
 
-        return render_template('admin.html', data=data, quiz_status_list=QuizStatus)
+        # return render_template('admin.html', data=data, quiz_status_list=QuizStatus)
         # return render_template('admin.html', current_question=current_question)
 
     data['logged_user'] = logged_user
 
-    return render_template('admin.html', question_form=question_form, data=data)
+    return render_template('admin.html', question_form=question_form, data=data, quiz_status_list=QuizStatus)
 
 #
 @app.route('/admin/allow_answer/<int:booking_id>', methods=['POST'])
@@ -175,19 +177,21 @@ def quiz():
     quiz_session = Quiz()
     user_booking_status = {}
     current_question_id = 0
+    current_question_closed = False
 
     logged_user = session.get('username')
 
     try:
         current_question = get_current_question()['data']
         current_question_id = current_question['id']
+        current_question_closed = current_question['closed']
         user_booking_status = booking_status(
             logged_user, current_question_id)['data']
     except KeyError:
         user_booking_status = {}
         current_question_id = 0
 
-    status = quiz_session.get_status(current_question)
+    status = quiz_session.get_status(current_question, current_question_closed)
 
     if request.method == 'POST':
         # form_data = request.form.to_dict(flat=False)
@@ -208,7 +212,7 @@ def quiz():
         did_win, booking_id = user_booking_status['did_win'], user_booking_status['id']
 
         status = quiz_session.get_status(
-            current_question, booked_answer, can_answer, did_answer, checked_answer, did_win)
+            current_question, current_question_closed, booked_answer, can_answer, did_answer, checked_answer, did_win)
 
         if status == QuizStatus.NO_QUESTION:
             flash('Wait for a new question', 'hint')
