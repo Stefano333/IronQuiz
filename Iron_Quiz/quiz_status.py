@@ -13,7 +13,7 @@ class QuizStatus(Enum):
 
 class Quiz():
     def get_status(self, question: dict, booked_answer=False, can_answer=False,
-                   did_answer=False, checked_answer=False, did_win=False, question_id=0):
+                   did_answer=False, checked_answer=False, did_win=False):
         self._question = question
         self._booked_answer, self._can_answer = booked_answer, can_answer
         self._did_answer, self._checked_answer = did_answer, checked_answer

@@ -70,9 +70,10 @@ def admin():
 
     try:
         current_question = get_current_question()['data']
-
+        current_question_id = current_question['id']
     except KeyError:
         current_question = {}
+        current_question_id = 0
 
     if request.method == 'POST':
         if question_form.validate_on_submit():
@@ -86,7 +87,7 @@ def admin():
             return redirect(url_for('admin'))
 
     if current_question:
-        current_question_id = current_question['id']
+        # current_question_id = current_question['id']
         current_booking = current_booking_to_deal(current_question_id)[
             'data']
         status = quiz_session.get_status(current_question)
@@ -173,18 +174,15 @@ def quiz():
     current_question_id = 0
 
     logged_user = session.get('username')
-    # status = QuizStatus.NO_QUESTION
 
     try:
         current_question = get_current_question()['data']
         current_question_id = current_question['id']
         user_booking_status = booking_status(
             logged_user, current_question_id)['data']
-        # status = QuizStatus.USER_CAN_BOOK
     except KeyError:
-        print("there's a problem: {}".format(current_question))
         user_booking_status = {}
-        pass
+        current_question_id = 0
 
     status = quiz_session.get_status(current_question)
 
@@ -207,7 +205,7 @@ def quiz():
         did_win, booking_id = user_booking_status['did_win'], user_booking_status['id']
 
         status = quiz_session.get_status(
-            current_question, booked_answer, can_answer, did_answer, checked_answer, did_win, booking_id)
+            current_question, booked_answer, can_answer, did_answer, checked_answer, did_win)
 
         if status == QuizStatus.NO_QUESTION:
             flash('Wait for a new question', 'hint')
