@@ -8,7 +8,7 @@
 <form id="question-form" method="post">
     {{ question_form.hidden_tag() }}
     <div class="form-group row">
-        <div class="col-6">
+        <div class="col-lg-6 col-xs">
             <label for="question">Question</label>
             {{ question_form.question(class_="form-control") }}
             {% for error in question_form.question.errors %}
@@ -20,7 +20,7 @@
             {% endfor %}
         </div>
 
-        <div class="col-6">
+        <div class="col-lg-6 col-xs">
             <label for="right-answer">Expected answer</label>
             {{ question_form.right_answer(class_="form-control") }}
             {% for error in question_form.right_answer.errors %}
@@ -32,7 +32,7 @@
             {% endfor %}
         </div>
 
-        <div class="col-6">
+        <div class="col-lg-6 col-xs">
             <label for="wrong-answer">Wrong answer</label>
             {{ question_form.wrong_answer(class_="form-control") }}
 
