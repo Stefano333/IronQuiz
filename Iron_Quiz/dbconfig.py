@@ -78,14 +78,14 @@ def add_new_user(user_to_search: str) -> dict:
 # inserts a new question
 
 
-def insert_new_question(question: str, right_answer: str, wrong_answer: str) -> dict:
+def insert_new_question(question: str, right_answer: str) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes
 
     insert_new_question_query = '''
-    INSERT INTO questions(question, right_answer, wrong_answer)
-    VALUES('{0}','{1}','{2}')
-    '''.format(question, right_answer, wrong_answer)
+    INSERT INTO questions(question, right_answer)
+    VALUES('{0}','{1}')
+    '''.format(question, right_answer)
 
     try:
         db = mariadb.connect(**config)
@@ -147,8 +147,7 @@ def get_current_question() -> dict:
             question_data['id'] = current_question[0]
             question_data['question'] = current_question[1]
             question_data['right_answer'] = current_question[2]
-            question_data['wrong_answer'] = current_question[3]
-            question_data['closed'] = current_question[4]
+            question_data['closed'] = current_question[3]
         else:
             print("sconfitto")
             cursor.execute(last_closed_question_query)
@@ -158,8 +157,7 @@ def get_current_question() -> dict:
                 question_data['id'] = current_question[0]
                 question_data['question'] = current_question[1]
                 question_data['right_answer'] = current_question[2]
-                question_data['wrong_answer'] = current_question[3]
-                question_data['closed'] = current_question[4]
+                question_data['closed'] = current_question[3]
 
         successful_query = True
 

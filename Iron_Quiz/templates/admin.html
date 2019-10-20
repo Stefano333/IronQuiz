@@ -31,35 +31,12 @@
             </p>
             {% endfor %}
         </div>
-
-        <div class="col-lg-6 col-xs">
-            <label for="wrong-answer">Wrong answer</label>
-            {{ question_form.wrong_answer(class_="form-control") }}
-
-        </div>
     </div>
     <div class="row">
         <div class="col-4">
 
             {{ question_form.submit_new_question(class_="btn btn-primary") }}
         </div>
-        <!-- <ul>
-            <li>{{ question_form.question }}</li>
-            {% for error in question_form.question.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
-            {% endfor %}
-            <li>{{ question_form.right_answer }}</li>
-            {% for error in question_form.right_answer.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
-            {% endfor %}
-            <li>{{ question_form.wrong_answer }}</li>
-            {% for error in question_form.wrong_answer.errors %}
-            <li><span style="color: red;">[{{ error }}]</span></li>
-            {% endfor %}
-            <li>{{ question_form.submit_new_question }}</li>
-
-
-        </ul> -->
 </form>
 
 {% elif data.status == quiz_status_list.USER_CAN_BOOK %}
@@ -90,7 +67,6 @@
 <ul>
     <li>Question: {{ data.current_question.question }}</li>
     <li>Right answer: {{ data.current_question.right_answer }}</li>
-    <li>Wrong answer: {{ data.current_question.wrong_answer }}</li>
 </ul>
 {% endif %}
 {{data.status}}

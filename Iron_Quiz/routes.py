@@ -79,8 +79,8 @@ def admin():
 
     if request.method == 'POST':
         if question_form.validate_on_submit():
-            insert_new_question(question_form.question.data,
-                                question_form.right_answer.data, question_form.wrong_answer.data)
+            print(insert_new_question(question_form.question.data,
+                                      question_form.right_answer.data))
 
             status = quiz_session.get_status(
                 current_question, current_question_closed)
