@@ -7,8 +7,8 @@
 {% if data.status == quiz_status_list.NO_QUESTION %}
 <form id="question-form" method="post">
     {{ question_form.hidden_tag() }}
-    <div class="form-group row">
-        <div class="col-lg-6 col-xs">
+    <div class="form-group row mx-0 px-0">
+        <div class="col-lg-6 col-xs mx-0 px-0">
             <label for="question">Question</label>
             {{ question_form.question(class_="form-control") }}
             {% for error in question_form.question.errors %}
@@ -32,42 +32,46 @@
             {% endfor %}
         </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-
-            {{ question_form.submit_new_question(class_="btn btn-primary") }}
-        </div>
+    <div class="row mx-0 px-0">
+        {{ question_form.submit_new_question(class_="btn btn-primary col col-md-4") }}
+    </div>
 </form>
 
 {% elif data.status == quiz_status_list.USER_CAN_BOOK %}
 <h3>Waiting for users bookings</h3>
 {% elif data.status == quiz_status_list.USER_WAITING_ALLOWANCE_TO_ANSWER %}
-<ul>
-    <li>Question: {{ data.current_question.question }}</li>
-    <li>Booker: {{ data.current_booking.booker }}</li>
-    <li>
-        <form id="allow-answer-form" method="POST" action="/admin/allow_answer/{{ data.current_booking.id }}">
-            <input id="submit-allow-answer" name="allow_answer" type="submit" value={{ data.current_booking.booker }}>
-        </form>
-    </li>
-</ul>
+<div class="row justify-content-center">
+    <p><span>Answer have been booked by </span><span
+            class="text-warning font-weight-bold">{{ data.current_booking.booker }}</span></p>
+</div>
+<form id="allow-answer-form" class="row justify-content-center" method="POST"
+    action="/admin/allow_answer/{{ data.current_booking.id }}">
+    <input id="submit-allow-answer" class="btn btn-primary col-lg-4 col-xs" name="allow_answer" type="submit"
+        value="Allow booker to answer!">
+</form>
+<!-- </div>
+</div> -->
 {% elif data.status == quiz_status_list.USER_WAITING_VALIDATION %}
-
-<ul>
-    <li>Question: {{ data.current_question.question }}</li>
-    <li>Answer: {{ data.current_booking.answer }}</li>
-    <li>
-        <form id="validate-answer-form" method="POST" action="/admin/validate_answer/{{ data.current_booking.id }}">
-            <input id="right-answer" name="answer" type="submit" value="right">
-            <input id="wrong-answer" name="answer" type="submit" value="wrong">
-        </form>
-    </li>
-</ul>
+<h1 class="text-center font-weight-bold h1">{{ data.current_question.question }}?</h1>
+<h3 class="text-center"><span class="h5 text-muted">right answer:</span>
+    <span>{{ data.current_question.right_answer }}</span>
+</h3>
+<h3 class="text-center"><span class="h5 text-muted">player's answer: </span>
+    <span>{{ data.current_booking.answer }}</span>
+</h3>
+<form id="validate-answer-form" class="row justify-content-center mx-0 px-0" method="POST"
+    action="/admin/validate_answer/{{ data.current_booking.id }}">
+    <input id="right-answer" class="btn btn-success col ml-sm-1" name="answer" type="submit" value="right">
+    <input id="wrong-answer" class="btn btn-danger col offset-sm-1 mr-sm-1" name="answer" type="submit" value="wrong">
+</form>
 {% else %}
 <ul>
     <li>Question: {{ data.current_question.question }}</li>
     <li>Right answer: {{ data.current_question.right_answer }}</li>
 </ul>
 {% endif %}
-{{data.status}}
+<div class="row">
+    <div class="col">{{data.status}}</div>
+</div>
+
 {% endblock %}
