@@ -13,6 +13,26 @@ config = {
 # checks if user is registered, otherwise it registers him
 
 
+def connect_to_db():
+    data = {}
+    data['error'] = ''
+
+    try:
+        data['db'] = mariadb.connect(**config)
+    except mariadb.Error as err:
+        data['error'] = err.errno
+
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+
+    finally:
+        return data
+
+
 def add_new_user(user_to_search: str) -> dict:
     successful_query = False
     error = ''  # will store eventual error codes

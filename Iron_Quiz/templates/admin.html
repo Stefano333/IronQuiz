@@ -7,23 +7,59 @@
 {% if data.status == quiz_status_list.NO_QUESTION %}
 <form id="question-form" method="post">
     {{ question_form.hidden_tag() }}
-    <ul>
-        <li>{{ question_form.question }}</li>
-        {% for error in question_form.question.errors %}
-        <li><span style="color: red;">[{{ error }}]</span></li>
-        {% endfor %}
-        <li>{{ question_form.right_answer }}</li>
-        {% for error in question_form.right_answer.errors %}
-        <li><span style="color: red;">[{{ error }}]</span></li>
-        {% endfor %}
-        <li>{{ question_form.wrong_answer }}</li>
-        {% for error in question_form.wrong_answer.errors %}
-        <li><span style="color: red;">[{{ error }}]</span></li>
-        {% endfor %}
-        <li>{{ question_form.submit_new_question }}</li>
+    <div class="form-group row">
+        <div class="col-6">
+            <label for="question">Question</label>
+            {{ question_form.question(class_="form-control") }}
+            {% for error in question_form.question.errors %}
+            <p>
+                <small id="questionHelpInline" class="text-muted">
+                    {{error}}
+                </small>
+            </p>
+            {% endfor %}
+        </div>
+
+        <div class="col-6">
+            <label for="right-answer">Expected answer</label>
+            {{ question_form.right_answer(class_="form-control") }}
+            {% for error in question_form.right_answer.errors %}
+            <p>
+                <small id="rightAnswerHelpInline" class="text-muted">
+                    {{error}}
+                </small>
+            </p>
+            {% endfor %}
+        </div>
+
+        <div class="col-6">
+            <label for="wrong-answer">Wrong answer</label>
+            {{ question_form.wrong_answer(class_="form-control") }}
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+
+            {{ question_form.submit_new_question(class_="btn btn-primary") }}
+        </div>
+        <!-- <ul>
+            <li>{{ question_form.question }}</li>
+            {% for error in question_form.question.errors %}
+            <li><span style="color: red;">[{{ error }}]</span></li>
+            {% endfor %}
+            <li>{{ question_form.right_answer }}</li>
+            {% for error in question_form.right_answer.errors %}
+            <li><span style="color: red;">[{{ error }}]</span></li>
+            {% endfor %}
+            <li>{{ question_form.wrong_answer }}</li>
+            {% for error in question_form.wrong_answer.errors %}
+            <li><span style="color: red;">[{{ error }}]</span></li>
+            {% endfor %}
+            <li>{{ question_form.submit_new_question }}</li>
 
 
-    </ul>
+        </ul> -->
 </form>
 
 {% elif data.status == quiz_status_list.USER_CAN_BOOK %}

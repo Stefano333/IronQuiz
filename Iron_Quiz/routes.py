@@ -223,35 +223,14 @@ def quiz():
         elif status == QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER:
             flash('Wait for your turn', 'hint')
 
-        # if booked_answer and not can_answer:  # not post
-        #     status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
-
-        #     flash('Wait for your turn', 'hint')
-
         elif status == QuizStatus.USER_CAN_ANSWER:
             quiz['current_question'] = get_current_question()['data']
-
-        # elif can_answer and not did_answer:  # not post
-        #     quiz['current_question'] = get_current_question()['data']
-
-        #     status = QuizStatus.USER_CAN_ANSWER
-            # # show question and let user to input answer
 
         elif status == QuizStatus.USER_WAITING_VALIDATION:
             flash('Wait for answer validation', 'hint')
 
-        # elif did_answer and not checked_answer:
-        #     status = QuizStatus.USER_WAITING_VALIDATION
-
-        #     flash('Wait for answer validation', 'hint')
-
         elif status == QuizStatus.USER_LOST:
             flash('Your answer was not right!', 'hint')
-
-        # elif checked_answer and not did_win:
-        #     status = QuizStatus.USER_LOST
-
-        #     flash('Your answer was not right!', 'hint')
 
         elif status == QuizStatus.USER_WON:
             flash('You won!', 'hint')
