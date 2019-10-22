@@ -59,10 +59,11 @@
 <h3 class="text-center"><span class="h5 text-muted">player's answer: </span>
     <span>{{ data.current_booking.answer }}</span>
 </h3>
-<form id="validate-answer-form" class="row justify-content-center mx-0 px-0" method="POST"
+<form id="validate-answer-form" class="mx-0 px-0 mt-4 justify-content-center row" method="POST"
     action="/admin/validate_answer/{{ data.current_booking.id }}">
-    <input id="right-answer" class="btn btn-success col ml-sm-1" name="answer" type="submit" value="right">
-    <input id="wrong-answer" class="btn btn-danger col offset-sm-1 mr-sm-1" name="answer" type="submit" value="wrong">
+    <input id="right-answer" class="btn btn-success col-sm-2 col rounded-left" name="answer" type="submit"
+        value="right">
+    <input id="wrong-answer" class="btn btn-danger col-sm-2 col" name="answer" type="submit" value="wrong">
 </form>
 {% else %}
 <ul>

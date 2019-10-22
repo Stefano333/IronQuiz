@@ -1,0 +1,7 @@
+#right-answer {
+    border-radius: 0.25rem 0 0 0.25rem !important;
+}
+
+#wrong-answer {
+    border-radius: 0 0.25rem 0.25rem 0 !important;
+}

@@ -134,6 +134,7 @@ def answer_validated(booking_id: int):
     if request.method == 'POST':
         # user_won = True if request.form.to_dict(
         #     Flat=True)['right_answer'] else False
+        print(request.form.to_dict())
         if request.form.to_dict()['answer'] == "right":
             user_won = True
         else:
