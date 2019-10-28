@@ -219,13 +219,14 @@ def quiz():
             flash('Wait for a new question', 'hint')
 
         elif status == QuizStatus.USER_CAN_BOOK:
+            quiz['current_question'] = current_question
             flash('User can book', 'hint')
 
         elif status == QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER:
             flash('Wait for your turn', 'hint')
 
         elif status == QuizStatus.USER_CAN_ANSWER:
-            quiz['current_question'] = get_current_question()['data']
+            quiz['current_question'] = current_question
 
         elif status == QuizStatus.USER_WAITING_VALIDATION:
             flash('Wait for answer validation', 'hint')
