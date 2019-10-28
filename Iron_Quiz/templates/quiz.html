@@ -25,7 +25,7 @@
 <h3>{{ message.0 }}</h3>
 {% endif %}
 {% elif quiz.status == quiz_status_list.USER_CAN_ANSWER %}
-<h1 class="text-center font-weight-bold h1 mb-5">{{ quiz.current_question.question }}?</h1>
+<h1 class="text-center h1 mb-5">{{ quiz.current_question.question }}?</h1>
 <form id="submit-answer-form" method="POST" action="quiz/submit_answer/{{quiz.user_booking_status.id}}">
     <div class="container">
         <div class="form-group">
@@ -42,7 +42,7 @@
     <div class="container-fluid mx-0 px-0">
         <div class="row justify-content-end mx-0 px-0">
             <input id="submit-answer" class="btn btn-primary col-4" name="submit_answer" type="submit"
-                value="submit_answer">
+                value="Submit answer">
         </div>
     </div>
 </form>
