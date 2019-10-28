@@ -56,29 +56,4 @@ class Quiz():
             elif self._did_answer and not self._checked_answer:
                 self._status = QuizStatus.USER_WAITING_VALIDATION
 
-        # elif question_is_closed and checked_answer and did_win:
-        #     self._status = QuizStatus.USER_WON
-
-        # elif question_is_closed and checked_answer and not did_win:
-        #     self._status = QuizStatus.USER_LOST
-
-        # elif not booked_answer:
-        #     self._status = QuizStatus.USER_CAN_BOOK
-
-        # elif self._booked_answer and not self._can_answer:
-        #     self._status = QuizStatus.USER_WAITING_ALLOWANCE_TO_ANSWER
-
-        # elif self._can_answer and not self._did_answer:
-        #     self._status = QuizStatus.USER_CAN_ANSWER
-
-        # elif self._did_answer and not self._checked_answer:
-        #     self._status = QuizStatus.USER_WAITING_VALIDATION
-
-        # elif self._checked_answer and not self._did_win:
-        #     self._status = QuizStatus.USER_LOST
-
-        # elif self._checked_answer and self._did_win:
-        #     self._status = QuizStatus.USER_WON
-
-        print(self._status)
         return self._status
