@@ -33,7 +33,7 @@ class Quiz():
         if not question:
             self._status = QuizStatus.NO_QUESTION
 
-        elif question_is_closed and checked_answer:
+        elif checked_answer:
             if did_win:
                 self._status = QuizStatus.USER_WON
 
