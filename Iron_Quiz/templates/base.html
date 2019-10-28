@@ -20,7 +20,9 @@
         <section class="content">
             <h1>{% block head %}{% endblock %}</h1>
             <!-- <div class="row"> -->
-            {% block content %}{% endblock %}
+            <div id="main-wrapper" class="py-3 px-5 mx-auto">
+                {% block content %}{% endblock %}
+            </div>
             <!-- </div> -->
         </section>
     </div>

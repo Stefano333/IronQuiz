@@ -6,34 +6,38 @@
 {% block content %}
 {% if data.status == quiz_status_list.NO_QUESTION %}
 <form id="question-form" method="post">
-    {{ question_form.hidden_tag() }}
-    <div class="form-group row mx-0 px-0">
-        <div class="col-lg-6 col-xs mx-0 px-0">
-            <label for="question">Question</label>
-            {{ question_form.question(class_="form-control") }}
-            {% for error in question_form.question.errors %}
-            <p>
-                <small id="questionHelpInline" class="text-muted">
-                    {{error}}
-                </small>
-            </p>
-            {% endfor %}
-        </div>
+    <div class="container">
+        {{ question_form.hidden_tag() }}
+        <div class="form-group">
+            <div class="row px-0 mb-3">
+                <label for="question">Question</label>
+                {{ question_form.question(class_="form-control col-13") }}
+                {% for error in question_form.question.errors %}
+                <p>
+                    <small id="questionHelpInline" class="text-muted">
+                        {{error}}
+                    </small>
+                </p>
+                {% endfor %}
+            </div>
 
-        <div class="col-lg-6 col-xs">
-            <label for="right-answer">Expected answer</label>
-            {{ question_form.right_answer(class_="form-control") }}
-            {% for error in question_form.right_answer.errors %}
-            <p>
-                <small id="rightAnswerHelpInline" class="text-muted">
-                    {{error}}
-                </small>
-            </p>
-            {% endfor %}
+            <div class="row px-0 mb-5">
+                <label for="right-answer">Expected answer</label>
+                {{ question_form.right_answer(class_="form-control col-13") }}
+                {% for error in question_form.right_answer.errors %}
+                <p>
+                    <small id="rightAnswerHelpInline" class="text-muted">
+                        {{error}}
+                    </small>
+                </p>
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <div class="row mx-0 px-0">
-        {{ question_form.submit_new_question(class_="btn btn-primary col col-md-4") }}
+    <div class="container-fluid mx-0 px-0">
+        <div class="row justify-content-end mx-0 px-0">
+            {{ question_form.submit_new_question(class_="btn btn-primary col-4") }}
+        </div>
     </div>
 </form>
 
@@ -47,7 +51,7 @@
 <form id="allow-answer-form" class="row justify-content-center" method="POST"
     action="/admin/allow_answer/{{ data.current_booking.id }}">
     <input id="submit-allow-answer" class="btn btn-primary col-lg-4 col-xs" name="allow_answer" type="submit"
-        value="Allow booker to answer!">
+        value="Allow him to answer!">
 </form>
 <!-- </div>
 </div> -->
@@ -56,14 +60,13 @@
 <h3 class="text-center"><span class="h5 text-muted">right answer:</span>
     <span>{{ data.current_question.right_answer }}</span>
 </h3>
-<h3 class="text-center"><span class="h5 text-muted">player's answer: </span>
+<h3 class="text-center mb-5"><span class="h5 text-muted">player's answer: </span>
     <span>{{ data.current_booking.answer }}</span>
 </h3>
 <form id="validate-answer-form" class="mx-0 px-0 mt-4 justify-content-center row" method="POST"
     action="/admin/validate_answer/{{ data.current_booking.id }}">
-    <input id="right-answer" class="btn btn-success col-sm-2 col rounded-left" name="answer" type="submit"
-        value="right">
-    <input id="wrong-answer" class="btn btn-danger col-sm-2 col" name="answer" type="submit" value="wrong">
+    <input id="right-answer" class="btn btn-success col" name="answer" type="submit" value="right">
+    <input id="wrong-answer" class="btn btn-danger col" name="answer" type="submit" value="wrong">
 </form>
 {% else %}
 <ul>
@@ -71,8 +74,8 @@
     <li>Right answer: {{ data.current_question.right_answer }}</li>
 </ul>
 {% endif %}
-<div class="row">
+<!-- <div class="row">
     <div class="col">{{data.status}}</div>
-</div>
+</div> -->
 
 {% endblock %}
