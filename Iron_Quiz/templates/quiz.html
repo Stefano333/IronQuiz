@@ -7,12 +7,12 @@
 {% block content %}
 {% with message = get_flashed_messages(category_filter=["hint"]) %}
 {% if quiz.status == quiz_status_list.NO_QUESTION %}
-<h3>Wait for a new question</h3>
+<p class="h3">Wait for a new question</p>
 {% elif quiz.status == quiz_status_list.USER_CAN_BOOK %}
 <form id="booking-form" method="POST">
-    <h3 class="text-center h5 text-muted">There is a new question!</h3>
+    <p class="h5 text-muted">There is a new question!</p>
     <div class="row justify-content-end mx-0 px-0">
-        <input id="submit-booking" class="btn btn-primary col-4" name="submit_booking" type="submit"
+        <input id="submit-booking" class="btn btn-primary col-4 mt-3" name="submit_booking" type="submit"
             value="Book answer">
     </div>
 </form>
@@ -22,10 +22,10 @@
     quiz.status == quiz_status_list.USER_LOST
     %}
 {% if message %}
-<h3>{{ message.0 }}</h3>
+<p class="h3">{{ message.0 }}</p>
 {% endif %}
 {% elif quiz.status == quiz_status_list.USER_CAN_ANSWER %}
-<h1 class="text-center h1 mb-5">{{ quiz.current_question.question }}?</h1>
+<p class="h1 mb-5">{{ quiz.current_question.question }}?</p>
 <form id="submit-answer-form" method="POST" action="quiz/submit_answer/{{quiz.user_booking_status.id}}">
     <div class="container">
         <div class="form-group">

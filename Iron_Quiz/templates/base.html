@@ -15,12 +15,12 @@
 </head>
 
 <body>
-    <div class="container">
-        <p>Hi, </span><span id="username">{% block user %}{% endblock %}</p>
+    <div class="container mt-5">
+        <!-- <p>Hi, </span><span id="username">{% block user %}{% endblock %}</p> -->
         <section class="content">
-            <h1>{% block head %}{% endblock %}</h1>
             <!-- <div class="row"> -->
-            <div id="main-wrapper" class="py-3 px-5 mx-auto">
+            <div id="main-wrapper" class="p-3 mx-auto">
+                <h1 class="text-center">{% block head %}{% endblock %}</h1>
                 {% block content %}{% endblock %}
             </div>
             <!-- </div> -->

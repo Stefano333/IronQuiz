@@ -3,7 +3,12 @@ body {
 }
 
 label {
-    color: #495057
+    color: #6c757d;
+}
+
+p.h1, p.h2, p.h3, p.h4, p.h5 {
+    text-align: center;
+    color: #6c757d !important
 }
 
 #main-wrapper {
