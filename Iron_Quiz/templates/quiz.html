@@ -32,7 +32,11 @@
             <div class="row px-0 mb-3">
                 {{ quiz.answer_form.answer(class_="form-control col-13") }}
                 {% for error in quiz.answer_form.answer.errors %}
-                <li><span style="color: red;">[{{ error }}]</span></li>
+                <p>
+                    <small id="quizAnswerError" class="text-muted">
+                        {{error}}
+                    </small>
+                </p>
                 {% endfor %}
                 <!-- {{ quiz.answer_form.submit_answer }} -->
             </div>
