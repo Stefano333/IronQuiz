@@ -16,15 +16,26 @@ p.h1, p.h2, p.h3, p.h4, p.h5 {
 }
 
 #main-wrapper {
-    border: 1px solid #dadce0;
-    border-radius: 8px;
     max-width: 40rem;
 }
 
-#right-answer {
-    border-radius: 0.25rem 0 0 0.25rem !important;
+@media (min-width: 576px) { 
+    #main-wrapper {
+        border: none;
+    }
 }
 
-#wrong-answer {
-    border-radius: 0 0.25rem 0.25rem 0 !important;
+@media (min-width: 768px) { 
+    #main-wrapper {
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+    }
+
+    #right-answer {
+        border-radius: 0.25rem 0 0 0.25rem !important;
+    }
+    
+    #wrong-answer {
+        border-radius: 0 0.25rem 0.25rem 0 !important;
+    }
 }

@@ -36,7 +36,7 @@
     </div>
     <div class="container-fluid mx-0 px-0">
         <div class="row justify-content-end mx-0 px-0">
-            {{ question_form.submit_new_question(class_="btn btn-primary col-4") }}
+            {{ question_form.submit_new_question(class_="btn btn-primary col-sm-4 col-xs") }}
         </div>
     </div>
 </form>
@@ -50,7 +50,7 @@
 </div>
 <form id="allow-answer-form" class="row justify-content-center" method="POST"
     action="/admin/allow_answer/{{ data.current_booking.id }}">
-    <input id="submit-allow-answer" class="btn btn-primary col-lg-4 col-xs mt-3" name="allow_answer" type="submit"
+    <input id="submit-allow-answer" class="btn btn-primary col-sm-4 col-xs mt-3" name="allow_answer" type="submit"
         value="Allow him to answer!">
 </form>
 <!-- </div>
@@ -66,8 +66,8 @@
 </p>
 <form id="validate-answer-form" class="mx-0 px-0 mt-4 justify-content-center row" method="POST"
     action="/admin/validate_answer/{{ data.current_booking.id }}">
-    <input id="right-answer" class="btn btn-success col" name="answer" type="submit" value="right">
-    <input id="wrong-answer" class="btn btn-danger col" name="answer" type="submit" value="wrong">
+    <input id="right-answer" class="btn btn-success col-md" name="answer" type="submit" value="right">
+    <input id="wrong-answer" class="btn btn-danger col-md" name="answer" type="submit" value="wrong">
 </form>
 {% else %}
 <p class="h3">Waiting for <span class="h3 text-warning">{{ data.current_booking.booker }}</span>'s answer</h3>
