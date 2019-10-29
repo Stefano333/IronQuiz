@@ -1,13 +1,39 @@
-<!doctype html>
-<title>Iron Quiz</title>
-<form method="post">
-    {{ form.hidden_tag() }}
-  <ul>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}Login{% endblock %}
+{% block content %}
+<form id="loginForm" method="post">
+  {{ form.hidden_tag() }}
+  <div class="container">
+    <div class="form-group">
+      <div class="row px-0 mb-3">
+        {{ form.username(class_="form-control col-13 mt-5") }}
+        {% for error in form.username.errors %}
+        <p>
+          <small id="loginUsernameError" class="text-muted">
+            {{error}}
+          </small>
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid mx-0 px-0">
+    <div class="row justify-content-end mx-0 px-0">
+      {{ form.submit(class="btn btn-primary col-sm-4 col-xs") }}
+    </div>
+  </div>
+  <!-- <ul>
     <li>{{ form.username }}</li>
     {% for error in form.username.errors %}
-      <li><span style="color: red;">[{{ error }}]</span></li>
+    <p>
+      <small id="loginUsernameError" class="text-muted">
+        {{error}}
+      </small>
+    </p>
     {% endfor %}
     <li>{{ form.submit }}</li>
-    
-  </ul>
+
+  </ul> -->
 </form>
+{% endblock %}
